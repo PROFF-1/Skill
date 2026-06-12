@@ -3,30 +3,54 @@ import axios from 'axios'
 
 export const SuperHeroesPage = () => {
 
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [data, setData] = useState([])
-
-  useEffect(() => {
-    setIsLoading(true)
-    axios.get('http://localhost:4000/superheroes')
-      .then((res) => {
-        setData(res.data)
-        setIsLoading(false)
-      })
-  }, [])
+  const [isLoading, setIsLoading] =  useState(true);
+  const [data, setData]= useState([])
+  const [error, setError]= useState('')
 
 
-  if (isLoading) {
-    return <h2>Loading...</h2>
+
+  const fetchData = async () => {
+    try{
+      const result = await axios.get("http://localhost:4000/superheroes");
+      setData(result.data);    
+    }
+    catch(error){
+      setError(error.message)
+    }
+    finally{
+      setIsLoading(false);
+    }
   }
 
-  return (
-    <>
-    <h2>Super Heroes Page</h2>
-    {data.map((hero) => {
-      return <div key={hero.id}>{hero.name}</div>
-    })}
-    </>
+
+  useEffect(()=>{
+    // axios.get("http://localhost:4000/superheroes")
+    // .then((res)=>{
+    //   setIsLoading(true)
+    //   setData(res.data)
+    //   setIsLoading(false)
+    // })
+    fetchData()
+  },[])
+
+
+  if (isLoading){
+    return <h1>loading...</h1>
+  }
+
+  if(error){
+    return <h2>{error}</h2>
+  }
+
+  return(
+  <>
+    {
+      data.map((hero)=>{
+        return <div key={hero.id}>{hero.name}</div>
+      })
+    }
+  </>
   )
+
+ 
 }
